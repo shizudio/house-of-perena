@@ -160,6 +160,41 @@ body {
   50% { opacity: 1; transform: scaleY(0.6); }
 }
 
+/* ── HERO CENTER LOCKUP ── */
+.hero-center {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 0; z-index: 2;
+  pointer-events: none;
+}
+.hero-center img {
+  height: 72px; width: auto; display: block;
+  filter: brightness(0) invert(1);
+  opacity: 0.95;
+}
+.hero-divider {
+  width: 1px; height: 32px;
+  background: rgba(255,255,255,0.35);
+  margin: 18px 0 16px;
+}
+.hero-wordmark {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(12px, 1.6vw, 16px);
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+  font-weight: 400;
+  color: rgba(255,255,255,0.92);
+}
+.hero-zh {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(11px, 1.2vw, 14px);
+  letter-spacing: 0.22em;
+  color: rgba(255,255,255,0.42);
+  margin-top: 8px;
+  font-weight: 300;
+}
+
 /* ── TICKER ── */
 .ticker {
   border-bottom: 0.5px solid var(--divider);
@@ -495,6 +530,12 @@ footer {
 <section id="hero">
   <video class="hero-bg" src="uploads/flowers-swaying.mp4" autoplay muted loop playsinline></video>
   <div class="hero-grad"></div>
+  <div class="hero-center">
+    <img src="uploads/logo.svg" alt="House of Perena">
+    <div class="hero-divider"></div>
+    <span class="hero-wordmark">House of Perena</span>
+    <span class="hero-zh">岩花</span>
+  </div>
   <div class="hero-bottom">
     <p class="hero-tagline">Embroidered nature.<br>Worn memory.</p>
     <div class="hero-cta-col">
