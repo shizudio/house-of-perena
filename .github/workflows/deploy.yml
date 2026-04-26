@@ -11,6 +11,9 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Deploy to Vercel
-        run: npx vercel --yes --prod --token ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          url=$(npx vercel --yes --prod --token $VERCEL_TOKEN 2>&1 | tee /tmp/vercel-out.txt | grep -E "https://.*vercel\.app" | tail -1)
+          cat /tmp/vercel-out.txt
+          echo "Deployment URL: $url"
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
