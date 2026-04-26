@@ -521,7 +521,7 @@ footer {
 
 <!-- HERO -->
 <section id="hero">
-  <video class="hero-bg" id="hero-video" src="uploads/landing_highres.mp4" autoplay muted playsinline></video>
+  <video class="hero-bg" id="hero-video" src="uploads/landing_highres.mp4" autoplay muted loop playsinline></video>
   <div class="hero-grad"></div>
   <div class="hero-center">
     <img src="uploads/logo.svg" alt="House of Perena">
@@ -688,34 +688,6 @@ footer {
 </footer>
 
 <script>
-/* Ping-pong video loop: plays forward then reverses back to start */
-(function () {
-  const video = document.getElementById('hero-video');
-  let reversing = false;
-  let lastTs = null;
-
-  function reverseStep(ts) {
-    if (lastTs === null) lastTs = ts;
-    const delta = (ts - lastTs) / 1000;
-    lastTs = ts;
-
-    video.currentTime = Math.max(0, video.currentTime - delta);
-
-    if (video.currentTime <= 0) {
-      reversing = false;
-      lastTs = null;
-      video.play();
-    } else {
-      requestAnimationFrame(reverseStep);
-    }
-  }
-
-  video.addEventListener('ended', () => {
-    reversing = true;
-    lastTs = null;
-    requestAnimationFrame(reverseStep);
-  });
-})();
 
 /* Nav scroll */
 window.addEventListener('scroll', () => {
