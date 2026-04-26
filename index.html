@@ -160,13 +160,6 @@ body {
   50% { opacity: 1; transform: scaleY(0.6); }
 }
 
-/* ── HERO VIDEO CROSSFADE ── */
-.hero-vid {
-  transition: opacity 1.2s ease;
-}
-#hero-vid-b {
-  opacity: 0;
-}
 
 /* ── HERO CENTER LOCKUP ── */
 .hero-center {
@@ -528,8 +521,7 @@ footer {
 
 <!-- HERO -->
 <section id="hero">
-  <video class="hero-bg hero-vid" id="hero-vid-a" src="uploads/landing_highres.mp4" autoplay muted playsinline></video>
-  <video class="hero-bg hero-vid" id="hero-vid-b" src="uploads/landing_highres.mp4" muted playsinline></video>
+  <video class="hero-bg" id="hero-video" src="uploads/landing_highres.mp4" autoplay muted playsinline></video>
   <div class="hero-grad"></div>
   <div class="hero-center">
     <img src="uploads/logo.svg" alt="House of Perena">
@@ -696,43 +688,32 @@ footer {
 </footer>
 
 <script>
-/* Smooth video crossfade loop */
+/* Ping-pong video loop: plays forward then reverses back to start */
 (function () {
-  const FADE = 1.2; // crossfade duration in seconds
-  let a = document.getElementById('hero-vid-a');
-  let b = document.getElementById('hero-vid-b');
-  let crossing = false;
+  const video = document.getElementById('hero-video');
+  let reversing = false;
+  let lastTs = null;
 
-  function startCrossfade() {
-    if (crossing) return;
-    crossing = true;
+  function reverseStep(ts) {
+    if (lastTs === null) lastTs = ts;
+    const delta = (ts - lastTs) / 1000;
+    lastTs = ts;
 
-    // Bring b to front and start playing from 0
-    b.currentTime = 0;
-    b.play();
+    video.currentTime = Math.max(0, video.currentTime - delta);
 
-    // Crossfade: a fades out, b fades in
-    a.style.opacity = 0;
-    b.style.opacity = 1;
-
-    setTimeout(() => {
-      // Swap roles: b is now the active video, a is the standby
-      a.pause();
-      a.currentTime = 0;
-      [a, b] = [b, a];
-      // Reset standby opacity instantly (no transition)
-      b.style.transition = 'none';
-      b.style.opacity = 0;
-      requestAnimationFrame(() => {
-        b.style.transition = 'opacity 1.2s ease';
-      });
-      crossing = false;
-    }, FADE * 1000);
+    if (video.currentTime <= 0) {
+      reversing = false;
+      lastTs = null;
+      video.play();
+    } else {
+      requestAnimationFrame(reverseStep);
+    }
   }
 
-  a.addEventListener('timeupdate', () => {
-    if (!a.duration) return;
-    if (a.duration - a.currentTime <= FADE) startCrossfade();
+  video.addEventListener('ended', () => {
+    reversing = true;
+    lastTs = null;
+    requestAnimationFrame(reverseStep);
   });
 })();
 
