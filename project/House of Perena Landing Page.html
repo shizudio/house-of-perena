@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>House of Perena — 岩花</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: oklch(96.5% 0.012 68);
+  font-family: 'DM Sans', sans-serif;
+  color: oklch(20% 0.01 50);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+:root {
+  --cream:   oklch(96.5% 0.012 68);
+  --ink:     oklch(20%  0.01  50);
+  --mauve:   oklch(86%  0.038 322);
+  --mauvedk: oklch(52%  0.09  322);
+  --burg:    #A33839;
+  --divider: rgba(40,32,24,0.1);
+  --max:     1280px;
+}
+
+/* ── NAV ── */
+#nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  transition: background 0.4s, border-color 0.4s;
+}
+#nav.scrolled {
+  background: var(--cream);
+  border-bottom: 0.5px solid var(--divider);
+}
+.nav-inner {
+  max-width: var(--max); margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 40px;
+}
+.nav-brand {
+  display: flex; align-items: center; gap: 10px;
+}
+.nav-brand img { height: 30px; width: auto; display: block; }
+.nav-wordmark {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 13px; letter-spacing: 0.22em;
+  text-transform: uppercase; font-weight: 400;
+  color: var(--cream);
+  transition: color 0.4s;
+}
+#nav.scrolled .nav-wordmark { color: var(--ink); }
+#nav.scrolled .nav-brand img { filter: none; }
+.nav-brand img { height: 30px; width: auto; display: block; transition: opacity 0.4s; }
+#nav.scrolled .nav-brand img { opacity: 1; }
+
+.hamburger {
+  display: flex; flex-direction: column; gap: 5px;
+  background: none; border: none; cursor: pointer; padding: 4px;
+}
+.hamburger span {
+  display: block; height: 1px; background: var(--cream);
+  transition: all 0.3s;
+}
+.hamburger span:nth-child(1) { width: 24px; }
+.hamburger span:nth-child(2) { width: 24px; }
+.hamburger span:nth-child(3) { width: 16px; }
+#nav.scrolled .hamburger span { background: var(--ink); }
+.hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); width: 24px; }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); width: 24px; }
+
+.nav-drawer {
+  overflow: hidden; max-height: 0;
+  background: var(--cream);
+  transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1);
+  border-top: 0.5px solid transparent;
+}
+.nav-drawer.open { max-height: 320px; border-color: var(--divider); }
+.drawer-item {
+  padding: 18px 40px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px; font-weight: 300;
+  color: var(--ink); cursor: pointer;
+  border-bottom: 0.5px solid var(--divider);
+  transition: opacity 0.15s;
+}
+.drawer-item:hover { opacity: 0.45; }
+
+/* ── HERO ── */
+#hero {
+  position: relative;
+  height: 100vh; min-height: 640px;
+  overflow: hidden;
+  background: #2a1f18;
+}
+#hero img.hero-bg {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center 30%;
+  display: block;
+}
+.hero-grad {
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(15,10,8,0.12) 0%,
+    rgba(15,10,8,0.05) 35%,
+    rgba(15,10,8,0.35) 75%,
+    rgba(15,10,8,0.65) 100%
+  );
+}
+.hero-bottom {
+  position: absolute; bottom: 7%; left: 0; right: 0;
+  max-width: var(--max); margin: 0 auto;
+  padding: 0 40px;
+  display: flex; align-items: flex-end; justify-content: space-between;
+}
+.hero-tagline {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(13px, 1.5vw, 18px);
+  font-weight: 300; font-style: italic;
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 0.04em;
+  max-width: 320px; line-height: 1.6;
+}
+.hero-cta-col {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 14px;
+}
+.btn-outline-light {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 9px; letter-spacing: 0.28em;
+  text-transform: uppercase;
+  padding: 15px 32px;
+  border: 1px solid rgba(255,255,255,0.6);
+  background: transparent; color: rgba(255,255,255,0.9);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+.btn-outline-light:hover {
+  border-color: #fff; background: rgba(255,255,255,0.1);
+}
+.scroll-cue {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  opacity: 0.4;
+}
+.scroll-cue span {
+  font-size: 8px; letter-spacing: 0.25em; text-transform: uppercase;
+  color: #fff;
+}
+.scroll-cue .line {
+  width: 1px; height: 32px; background: #fff;
+  animation: scrollpulse 1.8s ease-in-out infinite;
+}
+@keyframes scrollpulse {
+  0%,100% { opacity: 0.3; transform: scaleY(1); }
+  50% { opacity: 1; transform: scaleY(0.6); }
+}
+
+/* ── TICKER ── */
+.ticker {
+  border-bottom: 0.5px solid var(--divider);
+  padding: 13px 40px;
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--cream);
+}
+.ticker-word {
+  font-size: 9px; letter-spacing: 0.3em;
+  text-transform: uppercase; opacity: 0.3;
+}
+
+/* ── EDITORIAL FULL BLEED ── */
+#editorial {
+  position: relative;
+  height: 85vh; min-height: 560px;
+  overflow: hidden; background: #1a1612;
+}
+#editorial img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center top;
+  display: block;
+}
+.editorial-grad {
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(0,0,0,0) 30%,
+    rgba(20,15,10,0.7) 100%
+  );
+}
+.editorial-copy { display: none; }
+  @media (min-width: 769px) {
+    .editorial-copy {
+      display: flex;
+      position: absolute; right: 0; top: 0; bottom: 0;
+      width: 38%; flex-direction: column;
+      justify-content: center; padding: 0 60px 0 40px;
+    }
+  }
+.editorial-copy .overline {
+  font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase;
+  color: rgba(255,255,255,0.4); display: block; margin-bottom: 20px;
+}
+.editorial-copy h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(30px, 3.5vw, 48px);
+  font-weight: 300; line-height: 1.15; color: #fff;
+  margin-bottom: 20px;
+}
+.editorial-copy h2 em { font-style: italic; }
+.editorial-copy p {
+  font-size: 14px; line-height: 1.8; font-weight: 300;
+  color: rgba(255,255,255,0.55); margin-bottom: 32px;
+  max-width: 320px;
+}
+.btn-outline-light-sm {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase;
+  padding: 14px 28px;
+  border: 1px solid rgba(255,255,255,0.4);
+  background: transparent; color: rgba(255,255,255,0.8);
+  cursor: pointer; align-self: flex-start;
+  transition: all 0.2s;
+}
+.btn-outline-light-sm:hover { border-color: #fff; color: #fff; }
+
+/* ── COLLECTION ── */
+#collection {
+  padding: clamp(60px,7vw,100px) 40px;
+  background: var(--cream);
+}
+.collection-header {
+  max-width: var(--max); margin: 0 auto 48px;
+  display: flex; justify-content: space-between; align-items: flex-end;
+  border-top: 0.5px solid var(--divider); padding-top: 28px;
+}
+.collection-header h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(28px, 3vw, 40px); font-weight: 300;
+}
+.collection-header h2 em { font-style: italic; }
+.link-ghost {
+  font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+  opacity: 0.38; cursor: pointer; text-decoration: underline;
+  color: var(--ink); transition: opacity 0.15s;
+}
+.link-ghost:hover { opacity: 0.7; }
+
+/* Product grid */
+.product-grid {
+  max-width: var(--max); margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.product-card {
+  position: relative; overflow: hidden;
+  cursor: pointer; background: var(--mauve);
+}
+.product-card:hover .pc-img { transform: scale(1.03); }
+.card-d2:hover .pc-img { transform: scale(1.11); }
+.pc-img-wrap {
+  aspect-ratio: 3/4; overflow: hidden; position: relative;
+}
+.pc-img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94);
+  display: block;
+}
+/* Per-card crop adjustments */
+.card-d1 .pc-img { object-position: center top; }
+.card-d2 .pc-img { object-position: center top; transform: scale(1.08); }
+.card-d3 .pc-img { object-position: center top; }
+.card-d4 .pc-img { object-position: center top; }
+
+.pc-info {
+  padding: 20px 24px 28px;
+  background: var(--cream);
+  display: flex; justify-content: space-between; align-items: flex-end;
+}
+.pc-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px; font-weight: 300; line-height: 1.2;
+  color: var(--ink);
+}
+.pc-sub {
+  font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+  opacity: 0.38; margin-top: 4px; display: block;
+}
+.pc-price {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 16px; font-weight: 300;
+  opacity: 0.55; color: var(--ink);
+}
+
+/* ── BRAND QUOTE ── */
+#brand-quote {
+  position: relative;
+  padding: clamp(80px, 11vw, 140px) 40px;
+  text-align: center;
+  overflow: hidden;
+  background: #1a1612;
+}
+#brand-quote .quote-bg {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center center;
+  display: block; opacity: 0.45;
+  filter: saturate(0.7);
+}
+#brand-quote .quote-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, rgba(18,12,10,0.55) 0%, rgba(18,12,10,0.45) 100%);
+}
+#brand-quote blockquote {
+  position: relative; z-index: 2;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(26px, 4vw, 52px);
+  font-weight: 300; font-style: italic;
+  line-height: 1.25; max-width: 860px;
+  margin: 0 auto; color: #fff;
+}
+#brand-quote cite {
+  position: relative; z-index: 2;
+  display: block; margin-top: 28px;
+  font-size: 9px; letter-spacing: 0.3em;
+  text-transform: uppercase; opacity: 0.45;
+  font-style: normal; color: #fff;
+}
+
+/* ── BRAND STORY ── */
+#about {
+  max-width: var(--max); margin: 0 auto;
+  padding: clamp(64px, 9vw, 120px) 40px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+  align-items: start;
+}
+.about-overline {
+  font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase;
+  opacity: 0.38; display: block; margin-bottom: 20px;
+}
+.about-left h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(30px, 4vw, 52px); font-weight: 300; line-height: 1.1;
+}
+.about-left h2 em { font-style: italic; }
+.zh-deco {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 80px; font-weight: 300;
+  opacity: 0.07; letter-spacing: 0.05em;
+  line-height: 1; display: block; margin-top: 16px;
+  color: var(--ink);
+}
+.about-right p {
+  font-size: 15px; line-height: 1.88; font-weight: 300;
+  opacity: 0.6; margin-bottom: 28px;
+}
+.keywords {
+  display: flex; flex-direction: column; gap: 4px; margin-top: 8px;
+}
+.kw {
+  font-size: 10px; letter-spacing: 0.28em;
+  text-transform: uppercase; opacity: 0.3; font-weight: 300;
+}
+
+/* ── NEWSLETTER ── */
+#newsletter {
+  border-top: 0.5px solid var(--divider);
+  padding: clamp(60px, 8vw, 100px) 40px;
+  background: var(--cream);
+}
+.nl-inner {
+  max-width: 520px; margin: 0 auto;
+}
+.nl-inner .overline {
+  font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase;
+  opacity: 0.38; display: block; margin-bottom: 20px;
+}
+.nl-inner h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(34px, 5vw, 52px); font-weight: 300; line-height: 1.1;
+  margin-bottom: 14px;
+}
+.nl-inner h2 em { font-style: italic; }
+.nl-inner p {
+  font-size: 14px; line-height: 1.8; font-weight: 300;
+  opacity: 0.52; margin-bottom: 36px;
+}
+.email-form { display: flex; flex-direction: column; gap: 12px; }
+.email-input {
+  background: transparent; border: none;
+  border-bottom: 1px solid oklch(45% 0.07 322);
+  padding: 14px 0; font-size: 14px;
+  font-family: 'DM Sans', sans-serif; font-weight: 300;
+  color: var(--ink); outline: none; width: 100%;
+}
+.email-input::placeholder { opacity: 0.35; }
+.btn-submit {
+  background: var(--ink); color: var(--cream);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase;
+  padding: 18px; border: 1px solid var(--ink);
+  cursor: pointer; transition: background 0.2s, color 0.2s;
+}
+.btn-submit:hover { background: transparent; color: var(--ink); }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 0.5px solid var(--divider);
+  padding: 28px 40px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--cream);
+}
+.footer-brand {
+  display: flex; align-items: center; gap: 10px;
+}
+.footer-brand img { height: 22px; width: auto; opacity: 0.45; }
+.footer-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 11px; letter-spacing: 0.2em;
+  text-transform: uppercase; opacity: 0.32;
+}
+.footer-links { display: flex; gap: 24px; }
+.footer-links a {
+  font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+  opacity: 0.28; cursor: pointer; text-decoration: none; color: var(--ink);
+  transition: opacity 0.15s;
+}
+.footer-links a:hover { opacity: 0.6; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .nav-inner { padding: 16px 20px; }
+  .hero-bottom { padding: 0 20px; flex-direction: column; align-items: flex-start; gap: 20px; }
+  .hero-cta-col { align-items: flex-start; }
+  .ticker { padding: 12px 20px; flex-wrap: wrap; gap: 10px; }
+  #editorial { height: 70vh; }
+  #collection { padding: 48px 20px; }
+  .collection-header { margin-bottom: 28px; }
+  .product-grid { grid-template-columns: 1fr; }
+  #about { grid-template-columns: 1fr; gap: 32px; padding: 60px 20px; }
+  #brand-quote { padding: 60px 20px; }
+  #newsletter { padding: 60px 20px; }
+  footer { padding: 24px 20px; flex-direction: column; gap: 20px; text-align: center; }
+  .footer-links { flex-wrap: wrap; justify-content: center; gap: 16px; }
+  .drawer-item { padding: 16px 20px; }
+}
+</style>
+<template id="__bundler_thumbnail" data-bg-color="oklch(96.5% 0.012 68)">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <!-- Brand mark centered -->
+    <rect width="1200" height="800" fill="#f5f0e8"/>
+    <!-- Simplified rock/flower silhouette -->
+    <ellipse cx="300" cy="700" rx="320" ry="180" fill="#e8ddd0" opacity="0.6"/>
+    <ellipse cx="900" cy="720" rx="280" ry="160" fill="#e8ddd0" opacity="0.4"/>
+    <!-- Flower dots -->
+    <circle cx="260" cy="560" r="28" fill="#8B6B8B" opacity="0.5"/>
+    <circle cx="310" cy="530" r="18" fill="#A33839" opacity="0.5"/>
+    <circle cx="350" cy="555" r="22" fill="#C4A882" opacity="0.5"/>
+    <circle cx="220" cy="590" r="16" fill="#8B6B8B" opacity="0.4"/>
+    <!-- Brand name -->
+    <text x="600" y="360" font-family="serif" font-size="52" font-weight="300" letter-spacing="18" fill="#2e2318" text-anchor="middle" opacity="0.85">HOUSE OF PERENA</text>
+    <text x="600" y="430" font-family="serif" font-size="36" fill="#2e2318" text-anchor="middle" opacity="0.4">岩花</text>
+    <!-- Divider line -->
+    <line x1="480" y1="460" x2="720" y2="460" stroke="#2e2318" stroke-width="0.5" opacity="0.25"/>
+  </svg>
+</template>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-inner">
+    <div class="nav-brand">
+      <img src="uploads/logo.svg" alt="House of Perena">
+      <span class="nav-wordmark">House of Perena</span>
+    </div>
+    <button class="hamburger" id="hbg" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="nav-drawer" id="drawer">
+    <div class="drawer-item">Shop</div>
+    <div class="drawer-item">Lookbook</div>
+    <div class="drawer-item">Our Story</div>
+    <div class="drawer-item">Contact</div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <img class="hero-bg" src="uploads/Landing Section.png" alt="House of Perena — 岩花">
+  <div class="hero-grad"></div>
+  <div class="hero-bottom">
+    <p class="hero-tagline">Embroidered nature.<br>Worn memory.</p>
+    <div class="hero-cta-col">
+      <button class="btn-outline-light">Explore SS 2026</button>
+      <div class="scroll-cue">
+        <div class="line"></div>
+        <span>Scroll</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <span class="ticker-word">Effortless</span>
+  <span class="ticker-word">Breathable</span>
+  <span class="ticker-word">Floral</span>
+  <span class="ticker-word">Bold</span>
+  <span class="ticker-word">Timeless</span>
+</div>
+
+<!-- NEWSLETTER -->
+<section id="newsletter">
+  <div class="nl-inner">
+    <span class="overline">Early Access</span>
+    <h2 id="nl-headline">Be the first<br>to <em>know.</em></h2>
+    <p id="nl-body">Join the House of Perena circle. New arrivals, editorials, and invitations — thoughtfully delivered.</p>
+    <div class="email-form" id="nl-form">
+      <input class="email-input" type="email" placeholder="your@email.com" id="nl-email">
+      <button class="btn-submit" id="nl-btn">Notify Me</button>
+    </div>
+  </div>
+</section>
+
+<!-- EDITORIAL FULL BLEED -->
+<section id="editorial">
+  <img src="uploads/Full look showcase.png" alt="House of Perena — SS 2026 collection">
+  <div class="editorial-grad"></div>
+  <div class="editorial-copy">
+    <span class="overline">SS 2026 — Full Collection</span>
+    <h2>A garden,<br><em>worn.</em></h2>
+    <p>Five looks. Each carefully selected and printed with flora arrangements from the East.</p>
+    <button class="btn-outline-light-sm">Shop the Look</button>
+  </div>
+</section>
+
+<!-- COLLECTION GRID -->
+<section id="collection">
+  <div class="collection-header">
+    <h2>The <em>Collection</em></h2>
+    <span class="link-ghost">View All</span>
+  </div>
+  <div class="product-grid">
+
+    <!-- Design 1 -->
+    <div class="product-card card-d1">
+      <div class="pc-img-wrap">
+        <img class="pc-img" src="uploads/Main.png" alt="Garden Tee I">
+      </div>
+      <div class="pc-info">
+        <div>
+          <span class="pc-name">Garden Tee I</span>
+          <span class="pc-sub">Floral chest embroidery · Oversized</span>
+        </div>
+        <span class="pc-price">¥ 890</span>
+      </div>
+    </div>
+
+    <!-- Design 2 -->
+    <div class="product-card card-d2">
+      <div class="pc-img-wrap">
+        <img class="pc-img" src="uploads/Frame 38.png" alt="Garden Tee II">
+      </div>
+      <div class="pc-info">
+        <div>
+          <span class="pc-name">Garden Tee II</span>
+          <span class="pc-sub">Peony back embroidery · Oversized</span>
+        </div>
+        <span class="pc-price">¥ 890</span>
+      </div>
+    </div>
+
+    <!-- Design 3 -->
+    <div class="product-card card-d3">
+      <div class="pc-img-wrap">
+        <img class="pc-img" src="uploads/Frame 48.png" alt="Field Bloom Jersey">
+      </div>
+      <div class="pc-info">
+        <div>
+          <span class="pc-name">Field Bloom Jersey</span>
+          <span class="pc-sub">V-neck · Stripe cuff · Embroidered</span>
+        </div>
+        <span class="pc-price">¥ 980</span>
+      </div>
+    </div>
+
+    <!-- Design 4 -->
+    <div class="product-card card-d4">
+      <div class="pc-img-wrap">
+        <img class="pc-img" src="uploads/Frame 49.png" alt="Haori Jacket">
+      </div>
+      <div class="pc-info">
+        <div>
+          <span class="pc-name">Haori Jacket</span>
+          <span class="pc-sub">Floral print · Open front · Unisex</span>
+        </div>
+        <span class="pc-price">¥ 1,480</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- BRAND QUOTE -->
+<section id="brand-quote">
+  <img class="quote-bg" src="uploads/image 69.png" alt="">
+  <div class="quote-overlay"></div>
+  <blockquote>
+    "There is a particular beauty in things that bloom quietly — that ask nothing, yet give everything."
+    <cite>House of Perena — Brand Ethos</cite>
+  </blockquote>
+</section>
+
+<!-- ABOUT -->
+<section>
+  <div id="about">
+    <div class="about-left">
+      <span class="about-overline">House of Perena · 岩花</span>
+      <h2>A brand rooted<br>in <em>stillness.</em></h2>
+      <span class="zh-deco">岩花</span>
+    </div>
+    <div class="about-right">
+      <p>We draw from the quiet poetry of East Asian nature — wildflowers pressing through stone, the unhurried bloom of a hidden garden. Each piece is hand-embroidered by artisans, carrying the weight of something real and lasting.</p>
+      <p>House of Perena is effortless clothing for those who find beauty in the rooted, the patient, and the enduring.</p>
+      <div class="keywords">
+        <span class="kw">Effortless</span>
+        <span class="kw">Breathable</span>
+        <span class="kw">Floral</span>
+        <span class="kw">Bold</span>
+        <span class="kw">Timeless</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">
+    <img src="uploads/logo.svg" alt="HOP">
+    <span class="footer-logo">House of Perena · 岩花</span>
+  </div>
+  <nav class="footer-links">
+    <a href="#">Instagram</a>
+    <a href="#">Sizing Guide</a>
+    <a href="#">Shipping</a>
+    <a href="#">Contact</a>
+    <a href="#">Privacy</a>
+  </nav>
+</footer>
+
+<script>
+/* Nav scroll */
+window.addEventListener('scroll', () => {
+  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 60);
+});
+
+/* Hamburger */
+let open = false;
+document.getElementById('hbg').addEventListener('click', () => {
+  open = !open;
+  document.getElementById('hbg').classList.toggle('open', open);
+  document.getElementById('drawer').classList.toggle('open', open);
+});
+
+/* Newsletter */
+function submitNewsletter() {
+  const email = document.getElementById('nl-email').value;
+  if (!email.includes('@')) return;
+  document.getElementById('nl-form').style.display = 'none';
+  document.getElementById('nl-headline').innerHTML = "Thank you.<br><em>We'll be in touch.</em>";
+  document.getElementById('nl-body').textContent = "You're on the list. Watch your inbox for something special.";
+}
+document.getElementById('nl-btn').addEventListener('click', submitNewsletter);
+document.getElementById('nl-email').addEventListener('keydown', e => {
+  if (e.key === 'Enter') submitNewsletter();
+});
+</script>
+</body>
+</html>
