@@ -302,7 +302,7 @@ body {
 }
 /* Per-card crop adjustments */
 .card-d1 .pc-img { object-position: center top; }
-.card-d2 .pc-img { object-position: center top; transform: scale(1.08); }
+.card-d2 .pc-img { object-position: center 40%; transform: scale(1.08); }
 .card-d3 .pc-img { object-position: center top; }
 .card-d4 .pc-img { object-position: center top; }
 
@@ -377,6 +377,10 @@ body {
   font-size: clamp(30px, 4vw, 52px); font-weight: 300; line-height: 1.1;
 }
 .about-left h2 em { font-style: italic; }
+.about-logo {
+  display: block; margin-top: 28px;
+  height: 84px; width: auto;
+}
 .zh-deco {
   font-family: 'Cormorant Garamond', serif;
   font-size: 80px; font-weight: 300;
@@ -656,6 +660,7 @@ footer {
     <div class="about-left">
       <span class="about-overline">House of Perena · 岩花</span>
       <h2>A brand rooted<br>in <em>stillness.</em></h2>
+      <img class="about-logo" src="uploads/logo花.svg" alt="House of Perena">
       <span class="zh-deco">岩花</span>
     </div>
     <div class="about-right">
