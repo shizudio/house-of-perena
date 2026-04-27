@@ -1,0 +1,28 @@
+<section id="newsletter">
+  <div class="nl-inner">
+    <span class="overline">Early Access</span>
+    <h2>Be the first<br>to <em>know.</em></h2>
+    <p>Join the House of Perena circle. New arrivals, editorials, and invitations — thoughtfully delivered.</p>
+    {% form 'customer' %}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      {%- if form.posted_successfully? -%}
+        <p class="nl-success">You're on the list. Watch your inbox for something special.</p>
+      {%- else -%}
+        <div class="email-form">
+          <input class="email-input" type="email" name="contact[email]" placeholder="your@email.com" autocomplete="email">
+          <button class="btn-submit" type="submit">Notify Me</button>
+        </div>
+        {%- if form.errors -%}
+          <p style="font-size:13px;opacity:0.5;margin-top:8px;">{{ form.errors.translated_fields['email'] | capitalize }} {{ form.errors.messages['email'] }}</p>
+        {%- endif -%}
+      {%- endif -%}
+    {% endform %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Newsletter",
+  "presets": [{ "name": "Newsletter" }]
+}
+{% endschema %}

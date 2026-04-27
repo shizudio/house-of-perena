@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="{{ request.locale.iso_code }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page_title }} — House of Perena</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+  {{ content_for_header }}
+  <link rel="stylesheet" href="{{ 'theme.css' | asset_url }}">
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-inner">
+    <div class="nav-brand">
+      <img src="{{ 'logo.svg' | asset_url }}" alt="House of Perena">
+      <span class="nav-wordmark">House of Perena</span>
+    </div>
+    <button class="hamburger" id="hbg" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="nav-drawer" id="drawer">
+    <a class="drawer-item" href="{{ routes.collections_url }}">Shop</a>
+    <a class="drawer-item" href="#">Lookbook</a>
+    <a class="drawer-item" href="/pages/our-story">Our Story</a>
+    <a class="drawer-item" href="{{ routes.contact_url }}">Contact</a>
+  </div>
+</nav>
+
+{{ content_for_layout }}
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">
+    <img src="{{ 'logo.svg' | asset_url }}" alt="House of Perena">
+    <span class="footer-logo">House of Perena · 岩花</span>
+  </div>
+  <nav class="footer-links">
+    <a href="https://www.instagram.com/houseofperena" target="_blank" rel="noopener">Instagram</a>
+    <a href="/pages/sizing-guide">Sizing Guide</a>
+    <a href="/pages/shipping">Shipping</a>
+    <a href="{{ routes.contact_url }}">Contact</a>
+    <a href="{{ routes.privacy_policy_url }}">Privacy</a>
+  </nav>
+</footer>
+
+<script src="{{ 'theme.js' | asset_url }}" defer></script>
+</body>
+</html>

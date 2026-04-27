@@ -1,0 +1,47 @@
+<section id="hero">
+  {%- if section.settings.video_url != blank -%}
+    <video class="hero-bg" id="hero-video"
+      src="{{ section.settings.video_url }}"
+      autoplay muted loop playsinline></video>
+  {%- elsif section.settings.fallback_image != blank -%}
+    <img class="hero-bg" src="{{ section.settings.fallback_image | image_url: width: 2000 }}" alt="">
+  {%- endif -%}
+  <div class="hero-grad"></div>
+  <div class="hero-center">
+    <img src="{{ 'logo.svg' | asset_url }}" alt="House of Perena">
+    <span class="hero-wordmark">House of Perena</span>
+    <span class="hero-zh">岩花</span>
+  </div>
+  <div class="hero-bottom">
+    <p class="hero-tagline">Embroidered nature.<br>Worn memory.</p>
+    <div class="hero-cta-col">
+      <a href="#collection" class="btn-outline-light">Explore SS 2026</a>
+      <div class="scroll-cue">
+        <div class="line"></div>
+        <span>Scroll</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Hero",
+  "settings": [
+    {
+      "type": "text",
+      "id": "video_url",
+      "label": "Hero video URL",
+      "info": "Upload your video in Settings > Files, then paste the URL here."
+    },
+    {
+      "type": "image_picker",
+      "id": "fallback_image",
+      "label": "Fallback image (shown if no video)"
+    }
+  ],
+  "presets": [
+    { "name": "Hero" }
+  ]
+}
+{% endschema %}

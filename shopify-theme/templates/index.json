@@ -1,0 +1,41 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero",
+      "settings": {}
+    },
+    "ticker": {
+      "type": "ticker",
+      "settings": {}
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {}
+    },
+    "editorial": {
+      "type": "editorial",
+      "settings": {}
+    },
+    "collection-grid": {
+      "type": "collection-grid",
+      "settings": {}
+    },
+    "brand-quote": {
+      "type": "brand-quote",
+      "settings": {}
+    },
+    "about": {
+      "type": "about",
+      "settings": {}
+    }
+  },
+  "order": [
+    "hero",
+    "ticker",
+    "newsletter",
+    "editorial",
+    "collection-grid",
+    "brand-quote",
+    "about"
+  ]
+}

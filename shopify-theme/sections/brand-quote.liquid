@@ -1,0 +1,24 @@
+<section id="brand-quote">
+  {%- if section.settings.bg_image != blank -%}
+    <img class="quote-bg" src="{{ section.settings.bg_image | image_url: width: 2000 }}" alt="">
+  {%- endif -%}
+  <div class="quote-overlay"></div>
+  <blockquote>
+    "There is a particular beauty in things that bloom quietly — that ask nothing, yet give everything."
+    <cite>House of Perena — Brand Ethos</cite>
+  </blockquote>
+</section>
+
+{% schema %}
+{
+  "name": "Brand Quote",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "bg_image",
+      "label": "Background image"
+    }
+  ],
+  "presets": [{ "name": "Brand Quote" }]
+}
+{% endschema %}

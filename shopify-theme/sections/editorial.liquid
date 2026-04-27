@@ -1,0 +1,25 @@
+<section id="editorial">
+  {%- if section.settings.image != blank -%}
+    <img src="{{ section.settings.image | image_url: width: 2400 }}" alt="House of Perena — SS 2026 collection">
+  {%- endif -%}
+  <div class="editorial-grad"></div>
+  <div class="editorial-copy">
+    <span class="overline">SS 2026 — Full Collection</span>
+    <h2>A garden,<br><em>worn.</em></h2>
+    <p>Five looks. Each carefully selected and printed with flora arrangements from the East.</p>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Editorial",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Full collection image"
+    }
+  ],
+  "presets": [{ "name": "Editorial" }]
+}
+{% endschema %}

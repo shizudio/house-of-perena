@@ -1,0 +1,55 @@
+<section id="collection">
+  <div class="collection-header">
+    <h2>The <em>Collection</em></h2>
+    <a class="link-ghost" href="{{ routes.collections_url }}">View All</a>
+  </div>
+  <div class="product-grid">
+    {%- assign featured = collections[section.settings.collection] -%}
+    {%- if featured != blank -%}
+      {%- for product in featured.products limit: 4 -%}
+        <div class="product-card card-d{{ forloop.index }}">
+          <a href="{{ product.url }}" style="display:block;text-decoration:none;">
+            <div class="pc-img-wrap">
+              {%- if product.featured_image -%}
+                <img class="pc-img"
+                  src="{{ product.featured_image | image_url: width: 800 }}"
+                  alt="{{ product.title | escape }}"
+                  loading="lazy">
+              {%- endif -%}
+            </div>
+          </a>
+          <div class="pc-info">
+            <div>
+              <span class="pc-name">{{ product.title }}</span>
+              {%- if product.metafields.custom.subtitle != blank -%}
+                <span class="pc-sub">{{ product.metafields.custom.subtitle }}</span>
+              {%- elsif product.type != blank -%}
+                <span class="pc-sub">{{ product.type }}</span>
+              {%- endif -%}
+            </div>
+            <span class="pc-price">{{ product.price | money_without_trailing_zeros }}</span>
+          </div>
+        </div>
+      {%- endfor -%}
+    {%- else -%}
+      <p style="opacity:0.4;font-size:13px;grid-column:1/-1;padding:40px 0;">
+        Select a collection in the theme editor to display products here.
+      </p>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Collection Grid",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Featured collection",
+      "info": "First 4 products will be shown. Add a metafield 'custom.subtitle' to products for the detail line (e.g. 'Floral chest embroidery · Oversized')."
+    }
+  ],
+  "presets": [{ "name": "Collection Grid" }]
+}
+{% endschema %}
