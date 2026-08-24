@@ -465,6 +465,149 @@ footer {
 }
 .footer-links a:hover { opacity: 0.6; }
 
+/* ── CART ICON IN NAV ── */
+.nav-right {
+  display: flex; align-items: center; gap: 20px;
+}
+.cart-btn {
+  background: none; border: none; cursor: pointer; padding: 4px;
+  position: relative; display: flex; align-items: center;
+}
+.cart-btn svg { display: block; }
+.cart-btn .cart-icon-line { stroke: var(--cream); transition: stroke 0.4s; }
+#nav.scrolled .cart-btn .cart-icon-line { stroke: var(--ink); }
+.cart-badge {
+  position: absolute; top: -4px; right: -6px;
+  background: var(--burg); color: #fff;
+  font-size: 8px; font-weight: 500;
+  width: 16px; height: 16px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transform: scale(0);
+  transition: opacity 0.2s, transform 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.cart-badge.visible { opacity: 1; transform: scale(1); }
+
+/* ── ADD TO CART BUTTON ── */
+.btn-atc {
+  width: 100%; margin-top: 12px;
+  background: var(--ink); color: var(--cream);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 8px; letter-spacing: 0.3em; text-transform: uppercase;
+  padding: 14px; border: 1px solid var(--ink);
+  cursor: pointer; transition: background 0.2s, color 0.2s;
+}
+.btn-atc:hover { background: transparent; color: var(--ink); }
+.btn-atc.added { background: var(--burg); border-color: var(--burg); color: #fff; }
+
+/* ── CART DRAWER ── */
+.cart-overlay {
+  position: fixed; inset: 0; z-index: 400;
+  background: rgba(20,15,10,0.45);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.35s;
+}
+.cart-overlay.open { opacity: 1; pointer-events: all; }
+
+#cart-drawer {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 500;
+  width: min(400px, 100vw);
+  background: var(--cream);
+  display: flex; flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+#cart-drawer.open { transform: translateX(0); }
+
+.cart-head {
+  padding: 24px 28px 20px;
+  border-bottom: 0.5px solid var(--divider);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+.cart-head h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px; font-weight: 300; letter-spacing: 0.05em;
+}
+.cart-close {
+  background: none; border: none; cursor: pointer; padding: 4px;
+  opacity: 0.45; transition: opacity 0.15s;
+}
+.cart-close:hover { opacity: 1; }
+
+.cart-items {
+  flex: 1; overflow-y: auto;
+  padding: 0 28px;
+}
+.cart-empty {
+  padding: 60px 0; text-align: center;
+  font-size: 13px; opacity: 0.35; font-weight: 300;
+}
+
+.cart-item {
+  display: flex; gap: 16px;
+  padding: 20px 0;
+  border-bottom: 0.5px solid var(--divider);
+  align-items: center;
+}
+.cart-item-name {
+  flex: 1;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 17px; font-weight: 300; color: var(--ink);
+  line-height: 1.3;
+}
+.cart-item-sub {
+  font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase;
+  opacity: 0.38; display: block; margin-top: 3px;
+}
+.cart-item-price {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 15px; font-weight: 300; opacity: 0.6;
+  white-space: nowrap;
+}
+.qty-control {
+  display: flex; align-items: center; gap: 0;
+  border: 0.5px solid var(--divider);
+}
+.qty-btn {
+  background: none; border: none; cursor: pointer;
+  width: 30px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; opacity: 0.5; transition: opacity 0.15s;
+  font-family: 'DM Sans', sans-serif;
+}
+.qty-btn:hover { opacity: 1; }
+.qty-val {
+  width: 28px; text-align: center;
+  font-size: 12px; font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+}
+
+.cart-foot {
+  padding: 20px 28px 28px;
+  border-top: 0.5px solid var(--divider);
+  flex-shrink: 0;
+}
+.cart-total-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 20px;
+}
+.cart-total-label {
+  font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; opacity: 0.38;
+}
+.cart-total-val {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px; font-weight: 300;
+}
+.btn-checkout {
+  width: 100%; background: var(--ink); color: var(--cream);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase;
+  padding: 18px; border: 1px solid var(--ink);
+  cursor: pointer; transition: background 0.2s, color 0.2s;
+}
+.btn-checkout:hover { background: transparent; color: var(--ink); }
+
 /* ── RESPONSIVE ── */
 @media (max-width: 768px) {
   .nav-inner { padding: 16px 20px; }
@@ -511,9 +654,19 @@ footer {
       <img src="uploads/logo.svg" alt="House of Perena">
       <span class="nav-wordmark">House of Perena</span>
     </div>
-    <button class="hamburger" id="hbg" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
+    <div class="nav-right">
+      <button class="cart-btn" id="cart-toggle" aria-label="Cart" type="button">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path class="cart-icon-line" d="M2 2h2.5l1.8 9h10.4l1.5-6H7" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle class="cart-icon-line" cx="9.5" cy="18.5" r="1" stroke-width="1"/>
+          <circle class="cart-icon-line" cx="16.5" cy="18.5" r="1" stroke-width="1"/>
+        </svg>
+        <span class="cart-badge" id="cart-badge">0</span>
+      </button>
+      <button class="hamburger" id="hbg" aria-label="Menu" type="button">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
   </div>
   <div class="nav-drawer" id="drawer">
     <div class="drawer-item">Shop</div>
@@ -597,6 +750,7 @@ footer {
         </div>
         <span class="pc-price">¥ 890</span>
       </div>
+      <button class="btn-atc" type="button" data-name="Garden Tee I" data-sub="Floral chest embroidery · Oversized" data-price="890">Add to Cart</button>
     </div>
 
     <!-- Design 2 -->
@@ -611,6 +765,7 @@ footer {
         </div>
         <span class="pc-price">¥ 890</span>
       </div>
+      <button class="btn-atc" type="button" data-name="Garden Tee II" data-sub="Peony back embroidery · Oversized" data-price="890">Add to Cart</button>
     </div>
 
     <!-- Design 3 -->
@@ -625,6 +780,7 @@ footer {
         </div>
         <span class="pc-price">¥ 980</span>
       </div>
+      <button class="btn-atc" type="button" data-name="Field Bloom Jersey" data-sub="V-neck · Stripe cuff · Embroidered" data-price="980">Add to Cart</button>
     </div>
 
     <!-- Design 4 -->
@@ -639,6 +795,7 @@ footer {
         </div>
         <span class="pc-price">¥ 1,480</span>
       </div>
+      <button class="btn-atc" type="button" data-name="Haori Jacket" data-sub="Floral print · Open front · Unisex" data-price="1480">Add to Cart</button>
     </div>
 
   </div>
@@ -677,6 +834,30 @@ footer {
   </div>
 </section>
 
+<!-- CART OVERLAY + DRAWER -->
+<div class="cart-overlay" id="cart-overlay"></div>
+<aside id="cart-drawer" aria-label="Shopping cart">
+  <div class="cart-head">
+    <h3>Your Cart</h3>
+    <button class="cart-close" id="cart-close" type="button" aria-label="Close cart">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <line x1="2" y1="2" x2="16" y2="16" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+        <line x1="16" y1="2" x2="2" y2="16" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+  <div class="cart-items" id="cart-items">
+    <p class="cart-empty">Your cart is empty.</p>
+  </div>
+  <div class="cart-foot" id="cart-foot" style="display:none">
+    <div class="cart-total-row">
+      <span class="cart-total-label">Total</span>
+      <span class="cart-total-val" id="cart-total">¥ 0</span>
+    </div>
+    <button class="btn-checkout" type="button">Proceed to Checkout</button>
+  </div>
+</aside>
+
 <!-- FOOTER -->
 <footer>
   <div class="footer-brand">
@@ -700,11 +881,89 @@ window.addEventListener('scroll', () => {
 });
 
 /* Hamburger */
-let open = false;
+let menuOpen = false;
 document.getElementById('hbg').addEventListener('click', () => {
-  open = !open;
-  document.getElementById('hbg').classList.toggle('open', open);
-  document.getElementById('drawer').classList.toggle('open', open);
+  menuOpen = !menuOpen;
+  document.getElementById('hbg').classList.toggle('open', menuOpen);
+  document.getElementById('drawer').classList.toggle('open', menuOpen);
+});
+
+/* ── CART ── */
+let cart = [];
+
+function openCart() {
+  document.getElementById('cart-drawer').classList.add('open');
+  document.getElementById('cart-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeCart() {
+  document.getElementById('cart-drawer').classList.remove('open');
+  document.getElementById('cart-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('cart-toggle').addEventListener('click', openCart);
+document.getElementById('cart-close').addEventListener('click', closeCart);
+document.getElementById('cart-overlay').addEventListener('click', closeCart);
+
+function renderCart() {
+  const container = document.getElementById('cart-items');
+  const foot = document.getElementById('cart-foot');
+  const badge = document.getElementById('cart-badge');
+  const totalCount = cart.reduce((s, i) => s + i.qty, 0);
+  const totalPrice = cart.reduce((s, i) => s + i.price * i.qty, 0);
+
+  badge.textContent = totalCount;
+  badge.classList.toggle('visible', totalCount > 0);
+
+  if (cart.length === 0) {
+    container.innerHTML = '<p class="cart-empty">Your cart is empty.</p>';
+    foot.style.display = 'none';
+    return;
+  }
+
+  foot.style.display = 'block';
+  document.getElementById('cart-total').textContent = '¥ ' + totalPrice.toLocaleString();
+
+  container.innerHTML = cart.map((item, idx) => `
+    <div class="cart-item">
+      <div class="cart-item-name">
+        ${item.name}
+        <span class="cart-item-sub">${item.sub}</span>
+      </div>
+      <div class="qty-control">
+        <button class="qty-btn" type="button" onclick="changeQty(${idx}, -1)">−</button>
+        <span class="qty-val">${item.qty}</span>
+        <button class="qty-btn" type="button" onclick="changeQty(${idx}, 1)">+</button>
+      </div>
+      <span class="cart-item-price">¥ ${(item.price * item.qty).toLocaleString()}</span>
+    </div>
+  `).join('');
+}
+
+function changeQty(idx, delta) {
+  cart[idx].qty += delta;
+  if (cart[idx].qty <= 0) cart.splice(idx, 1);
+  renderCart();
+}
+
+document.querySelectorAll('.btn-atc').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const name = btn.dataset.name;
+    const sub = btn.dataset.sub;
+    const price = parseInt(btn.dataset.price, 10);
+    const existing = cart.find(i => i.name === name);
+    if (existing) {
+      existing.qty++;
+    } else {
+      cart.push({ name, sub, price, qty: 1 });
+    }
+    renderCart();
+    btn.textContent = 'Added ✓';
+    btn.classList.add('added');
+    setTimeout(() => { btn.textContent = 'Add to Cart'; btn.classList.remove('added'); }, 1400);
+    openCart();
+  });
 });
 
 /* Newsletter */
