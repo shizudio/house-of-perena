@@ -1,0 +1,150 @@
+name: Fix Shopify Cart
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/shopify-cart-fix.yml'
+
+jobs:
+  fix-cart:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get live theme ID and fix cart template
+        run: |
+          STORE="stoneflower-3.myshopify.com"
+          TOKEN="${{ secrets.SHOPIFY_TOKEN }}"
+
+          # Get all themes, find the main/live one
+          THEMES=$(curl -s "https://$STORE/admin/api/2024-10/themes.json" \
+            -H "X-Shopify-Access-Token: $TOKEN")
+          echo "Themes: $THEMES"
+
+          THEME_ID=$(echo "$THEMES" | python3 -c "
+          import sys, json
+          themes = json.load(sys.stdin).get('themes', [])
+          live = next((t for t in themes if t['role'] == 'main'), None)
+          print(live['id'] if live else '')
+          ")
+          echo "Live theme ID: $THEME_ID"
+
+          # Check if cart.liquid exists
+          FILES=$(curl -s "https://$STORE/admin/api/2024-10/themes/$THEME_ID/assets.json" \
+            -H "X-Shopify-Access-Token: $TOKEN")
+          echo "$FILES" | python3 -c "
+          import sys, json
+          assets = json.load(sys.stdin).get('assets', [])
+          cart_files = [a['key'] for a in assets if 'cart' in a['key'].lower()]
+          print('Cart files found:', cart_files)
+          "
+
+          # Create/update the cart template
+          CART_LIQUID=$(cat << 'LIQUIDEOF'
+          <div class="cart-page" style="max-width:820px;margin:120px auto 80px;padding:0 40px;font-family:'DM Sans',sans-serif;">
+
+            <h1 style="font-family:'Cormorant Garamond',serif;font-size:clamp(32px,4vw,52px);font-weight:300;margin-bottom:48px;">
+              Your Cart
+            </h1>
+
+            {% if cart.item_count == 0 %}
+              <div style="text-align:center;padding:80px 0;opacity:0.4;">
+                <p style="font-size:15px;font-weight:300;margin-bottom:28px;">Your cart is empty.</p>
+                <a href="/collections/all" style="font-size:9px;letter-spacing:.3em;text-transform:uppercase;text-decoration:underline;color:inherit;">
+                  Continue Shopping
+                </a>
+              </div>
+
+            {% else %}
+              <form action="/cart" method="post">
+
+                <!-- Line items -->
+                {% for item in cart.items %}
+                  <div style="display:flex;gap:24px;align-items:center;padding:24px 0;border-bottom:0.5px solid rgba(40,32,24,0.1);">
+                    <a href="{{ item.url }}">
+                      <img src="{{ item.image | image_url: width: 120 }}"
+                        alt="{{ item.title | escape }}"
+                        style="width:90px;height:110px;object-fit:cover;display:block;">
+                    </a>
+                    <div style="flex:1;">
+                      <a href="{{ item.url }}" style="text-decoration:none;color:inherit;">
+                        <span style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;display:block;margin-bottom:4px;">
+                          {{ item.product_title }}
+                        </span>
+                      </a>
+                      {% unless item.variant_title == 'Default Title' %}
+                        <span style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;opacity:.38;display:block;margin-bottom:12px;">
+                          {{ item.variant_title }}
+                        </span>
+                      {% endunless %}
+                      <!-- Qty control -->
+                      <div style="display:flex;align-items:center;border:0.5px solid rgba(40,32,24,0.15);width:fit-content;">
+                        <button type="button" style="width:34px;height:34px;background:none;border:none;cursor:pointer;font-size:16px;opacity:.5;"
+                          onclick="this.closest('div').querySelector('input').stepDown();this.form.submit()">−</button>
+                        <input type="number" name="updates[]" value="{{ item.quantity }}" min="0"
+                          style="width:36px;text-align:center;border:none;font-size:12px;font-family:'DM Sans',sans-serif;background:transparent;">
+                        <button type="button" style="width:34px;height:34px;background:none;border:none;cursor:pointer;font-size:16px;opacity:.5;"
+                          onclick="this.closest('div').querySelector('input').stepUp();this.form.submit()">+</button>
+                      </div>
+                    </div>
+                    <div style="text-align:right;">
+                      <span style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;opacity:.6;">
+                        {{ item.line_price | money_without_trailing_zeros }}
+                      </span>
+                      <a href="/cart/change?line={{ forloop.index }}&quantity=0"
+                        style="display:block;margin-top:8px;font-size:8px;letter-spacing:.2em;text-transform:uppercase;opacity:.28;text-decoration:underline;color:inherit;">
+                        Remove
+                      </a>
+                    </div>
+                  </div>
+                {% endfor %}
+
+                <!-- Totals -->
+                <div style="display:flex;justify-content:space-between;align-items:baseline;padding:32px 0 28px;">
+                  <span style="font-size:9px;letter-spacing:.3em;text-transform:uppercase;opacity:.38;">Total</span>
+                  <span style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;">
+                    {{ cart.total_price | money_without_trailing_zeros }}
+                  </span>
+                </div>
+                <p style="font-size:11px;opacity:.35;margin-bottom:24px;">Shipping & taxes calculated at checkout.</p>
+
+                <button type="submit" name="checkout"
+                  style="width:100%;background:rgb(20,15,10);color:#f5f0e8;font-family:'DM Sans',sans-serif;font-size:9px;letter-spacing:.3em;text-transform:uppercase;padding:20px;border:1px solid rgb(20,15,10);cursor:pointer;">
+                  Proceed to Checkout
+                </button>
+
+                <div style="text-align:center;margin-top:20px;">
+                  <a href="/collections/all"
+                    style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;opacity:.35;text-decoration:underline;color:inherit;">
+                    Continue Shopping
+                  </a>
+                </div>
+
+              </form>
+            {% endif %}
+          </div>
+          LIQUIDEOF
+          )
+
+          # Push to live theme
+          PAYLOAD=$(python3 -c "
+          import json, sys
+          content = open('/dev/stdin').read()
+          print(json.dumps({'asset': {'key': 'templates/cart.liquid', 'value': content}}))
+          " <<< "$CART_LIQUID")
+
+          RESULT=$(curl -s -X PUT \
+            "https://$STORE/admin/api/2024-10/themes/$THEME_ID/assets.json" \
+            -H "X-Shopify-Access-Token: $TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD")
+
+          echo "Result: $RESULT"
+          echo "$RESULT" | python3 -c "
+          import sys, json
+          d = json.load(sys.stdin)
+          if 'asset' in d:
+              print('SUCCESS: cart template created/updated at', d['asset']['key'])
+          else:
+              print('ERROR:', d)
+          "
