@@ -20,7 +20,7 @@ jobs:
           token = "${{ secrets.SHOPIFY_TOKEN }}"
           ctx = ssl.create_default_context()
 
-          def gh(method, url, data=None):
+          def api(method, url, data=None):
               req = urllib.request.Request(url, data=data,
                   headers={"X-Shopify-Access-Token": token, "Content-Type": "application/json"},
                   method=method)
@@ -29,11 +29,14 @@ jobs:
                       return json.load(r)
               except urllib.error.HTTPError as e:
                   body = e.read().decode()
-                  print(f"HTTP {e.code}: {body[:400]}")
-                  return {}
+                  print(f"HTTP {e.code}: {body[:600]}")
+                  return None
 
           # 1. Get live theme
-          themes = gh("GET", f"https://{store}/admin/api/2024-10/themes.json").get("themes", [])
+          res = api("GET", f"https://{store}/admin/api/2024-10/themes.json")
+          if not res:
+              print("ERROR: Could not fetch themes — check token"); sys.exit(1)
+          themes = res.get("themes", [])
           for t in themes:
               print(f"  Theme: {t['id']} | {t['role']} | {t['name']}")
           live = next((t for t in themes if t["role"] == "main"), None)
@@ -42,71 +45,85 @@ jobs:
           tid = live["id"]
           print(f"\nLive theme: {live['name']} (ID: {tid})")
 
-          # 2. List template files
-          assets = gh("GET", f"https://{store}/admin/api/2024-10/themes/{tid}/assets.json").get("assets", [])
+          # 2. List all template files
+          assets_res = api("GET", f"https://{store}/admin/api/2024-10/themes/{tid}/assets.json")
+          if not assets_res:
+              print("ERROR: Could not fetch assets"); sys.exit(1)
+          assets = assets_res.get("assets", [])
           templates = sorted(a["key"] for a in assets if a["key"].startswith("templates/"))
           print("\nTemplate files:")
           for t in templates: print(f"  {t}")
 
-          # 3. Check if cart template exists
           cart_liquid = next((a for a in assets if a["key"] == "templates/cart.liquid"), None)
           cart_json   = next((a for a in assets if a["key"] == "templates/cart.json"), None)
           print(f"\ncart.liquid exists: {cart_liquid is not None}")
           print(f"cart.json exists:   {cart_json is not None}")
 
-          # 4. Write cart.liquid
+          # 3. Write cart.liquid
           cart_content = """{% layout 'theme' %}
-          <main style="max-width:820px;margin:120px auto 80px;padding:0 40px;">
-            <h1 style="font-family:'Cormorant Garamond',serif;font-size:clamp(32px,4vw,48px);font-weight:300;margin-bottom:48px;letter-spacing:.02em;">Your Cart</h1>
-            {% if cart.item_count == 0 %}
-              <div style="text-align:center;padding:80px 0;opacity:.4;">
-                <p style="font-size:15px;font-weight:300;margin-bottom:28px;">Your cart is empty.</p>
-                <a href="/collections/all" style="font-size:9px;letter-spacing:.3em;text-transform:uppercase;text-decoration:underline;color:inherit;">Continue Shopping</a>
-              </div>
-            {% else %}
-              <form action="/cart" method="post">
-                {% for item in cart.items %}
-                  <div style="display:flex;gap:24px;align-items:center;padding:24px 0;border-bottom:.5px solid rgba(40,32,24,.1);">
-                    <a href="{{ item.url }}">
-                      <img src="{{ item.image | image_url: width: 200 }}" alt="{{ item.title | escape }}" style="width:90px;height:110px;object-fit:cover;display:block;background:#e8ddd0;">
-                    </a>
-                    <div style="flex:1;">
-                      <a href="{{ item.url }}" style="text-decoration:none;color:inherit;">
-                        <span style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;display:block;margin-bottom:4px;">{{ item.product_title }}</span>
-                      </a>
-                      {% unless item.variant_title == 'Default Title' %}
-                        <span style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;opacity:.38;display:block;margin-bottom:8px;">{{ item.variant_title }}</span>
-                      {% endunless %}
-                      <div style="display:flex;align-items:center;border:.5px solid rgba(40,32,24,.15);width:fit-content;margin-top:12px;">
-                        <a href="/cart/change?line={{ forloop.index }}&quantity={{ item.quantity | minus: 1 }}" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;text-decoration:none;color:inherit;font-size:18px;opacity:.5;line-height:1;">&#8722;</a>
-                        <span style="width:36px;text-align:center;font-size:12px;font-family:'DM Sans',sans-serif;">{{ item.quantity }}</span>
-                        <a href="/cart/change?line={{ forloop.index }}&quantity={{ item.quantity | plus: 1 }}" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;text-decoration:none;color:inherit;font-size:18px;opacity:.5;line-height:1;">&#43;</a>
-                      </div>
-                    </div>
-                    <div style="text-align:right;">
-                      <span style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;opacity:.6;">{{ item.line_price | money_without_trailing_zeros }}</span>
-                      <a href="/cart/change?line={{ forloop.index }}&quantity=0" style="display:block;margin-top:8px;font-size:8px;letter-spacing:.2em;text-transform:uppercase;opacity:.28;text-decoration:underline;color:inherit;">Remove</a>
-                    </div>
-                  </div>
-                {% endfor %}
-                <div style="display:flex;justify-content:space-between;align-items:baseline;padding:32px 0 16px;">
-                  <span style="font-size:9px;letter-spacing:.3em;text-transform:uppercase;opacity:.38;">Total</span>
-                  <span style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;">{{ cart.total_price | money_without_trailing_zeros }}</span>
-                </div>
-                <p style="font-size:11px;opacity:.35;margin-bottom:24px;">Shipping &amp; taxes calculated at checkout.</p>
-                <button type="submit" name="checkout" style="width:100%;background:rgb(20,15,10);color:#f5f0e8;font-family:'DM Sans',sans-serif;font-size:9px;letter-spacing:.3em;text-transform:uppercase;padding:20px;border:1px solid rgb(20,15,10);cursor:pointer;">Proceed to Checkout</button>
-                <div style="text-align:center;margin-top:20px;">
-                  <a href="/collections/all" style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;opacity:.35;text-decoration:underline;color:inherit;">Continue Shopping</a>
-                </div>
-              </form>
-            {% endif %}
-          </main>"""
+<main style="max-width:820px;margin:120px auto 80px;padding:0 40px;">
+  <h1 style="font-family:'Cormorant Garamond',serif;font-size:clamp(32px,4vw,48px);font-weight:300;margin-bottom:48px;letter-spacing:.02em;">Your Cart</h1>
+  {% if cart.item_count == 0 %}
+    <div style="text-align:center;padding:80px 0;opacity:.4;">
+      <p style="font-size:15px;font-weight:300;margin-bottom:28px;">Your cart is empty.</p>
+      <a href="/collections/all" style="font-size:9px;letter-spacing:.3em;text-transform:uppercase;text-decoration:underline;color:inherit;">Continue Shopping</a>
+    </div>
+  {% else %}
+    <form action="/cart" method="post">
+      {% for item in cart.items %}
+        <div style="display:flex;gap:24px;align-items:center;padding:24px 0;border-bottom:.5px solid rgba(40,32,24,.1);">
+          <a href="{{ item.url }}">
+            <img src="{{ item.image | image_url: width: 200 }}" alt="{{ item.title | escape }}" style="width:90px;height:110px;object-fit:cover;display:block;background:#e8ddd0;">
+          </a>
+          <div style="flex:1;">
+            <a href="{{ item.url }}" style="text-decoration:none;color:inherit;">
+              <span style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;display:block;margin-bottom:4px;">{{ item.product_title }}</span>
+            </a>
+            {% unless item.variant_title == 'Default Title' %}
+              <span style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;opacity:.38;display:block;margin-bottom:8px;">{{ item.variant_title }}</span>
+            {% endunless %}
+            <div style="display:flex;align-items:center;border:.5px solid rgba(40,32,24,.15);width:fit-content;margin-top:12px;">
+              <a href="/cart/change?line={{ forloop.index }}&quantity={{ item.quantity | minus: 1 }}" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;text-decoration:none;color:inherit;font-size:18px;opacity:.5;">&#8722;</a>
+              <span style="width:36px;text-align:center;font-size:12px;">{{ item.quantity }}</span>
+              <a href="/cart/change?line={{ forloop.index }}&quantity={{ item.quantity | plus: 1 }}" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;text-decoration:none;color:inherit;font-size:18px;opacity:.5;">&#43;</a>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <span style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;opacity:.6;">{{ item.line_price | money_without_trailing_zeros }}</span>
+            <a href="/cart/change?line={{ forloop.index }}&quantity=0" style="display:block;margin-top:8px;font-size:8px;letter-spacing:.2em;text-transform:uppercase;opacity:.28;text-decoration:underline;color:inherit;">Remove</a>
+          </div>
+        </div>
+      {% endfor %}
+      <div style="display:flex;justify-content:space-between;align-items:baseline;padding:32px 0 16px;">
+        <span style="font-size:9px;letter-spacing:.3em;text-transform:uppercase;opacity:.38;">Total</span>
+        <span style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;">{{ cart.total_price | money_without_trailing_zeros }}</span>
+      </div>
+      <p style="font-size:11px;opacity:.35;margin-bottom:24px;">Shipping &amp; taxes calculated at checkout.</p>
+      <button type="submit" name="checkout" style="width:100%;background:rgb(20,15,10);color:#f5f0e8;font-family:'DM Sans',sans-serif;font-size:9px;letter-spacing:.3em;text-transform:uppercase;padding:20px;border:none;cursor:pointer;">Proceed to Checkout</button>
+      <div style="text-align:center;margin-top:20px;">
+        <a href="/collections/all" style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;opacity:.35;text-decoration:underline;color:inherit;">Continue Shopping</a>
+      </div>
+    </form>
+  {% endif %}
+</main>"""
 
           payload = json.dumps({"asset": {"key": "templates/cart.liquid", "value": cart_content}}).encode()
-          result = gh("PUT", f"https://{store}/admin/api/2024-10/themes/{tid}/assets.json", data=payload)
-          if "asset" in result:
-              print(f"\nSUCCESS: {result['asset']['key']} written ({len(cart_content)} chars)")
+          result = api("PUT", f"https://{store}/admin/api/2024-10/themes/{tid}/assets.json", data=payload)
+          if result is None:
+              print("\nFAILED: PUT request returned error"); sys.exit(1)
+          if "asset" not in result:
+              print(f"\nFAILED: unexpected response: {result}"); sys.exit(1)
+          print(f"\nWRITE SUCCESS: {result['asset']['key']} ({len(cart_content)} chars)")
+
+          # 4. Read it back to verify
+          verify = api("GET", f"https://{store}/admin/api/2024-10/themes/{tid}/assets.json?asset[key]=templates/cart.liquid")
+          if verify and "asset" in verify:
+              val = verify["asset"].get("value", "")
+              print(f"VERIFY SUCCESS: file confirmed on server ({len(val)} chars)")
+              print(f"First 100 chars: {val[:100]}")
           else:
-              print(f"\nFAILED: {result}")
+              print(f"VERIFY FAILED: could not read back file: {verify}")
               sys.exit(1)
+
+          print("\nDone. Visit https://stoneflower.nyc/cart to confirm.")
           EOF
