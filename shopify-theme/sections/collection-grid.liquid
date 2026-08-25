@@ -29,6 +29,15 @@
             </div>
             <span class="pc-price">{{ product.price | money_without_trailing_zeros }}</span>
           </div>
+          {%- if product.available -%}
+            <button class="btn-atc" type="button"
+              data-variant-id="{{ product.variants.first.id }}"
+              data-product-title="{{ product.title | escape }}">
+              Add to Cart
+            </button>
+          {%- else -%}
+            <button class="btn-atc btn-atc--sold-out" type="button" disabled>Sold Out</button>
+          {%- endif -%}
         </div>
       {%- endfor -%}
     {%- else -%}

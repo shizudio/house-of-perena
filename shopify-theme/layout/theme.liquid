@@ -18,9 +18,19 @@
       <img src="{{ 'logo.svg' | asset_url }}" alt="House of Perena">
       <span class="nav-wordmark">House of Perena</span>
     </div>
-    <button class="hamburger" id="hbg" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
+    <div class="nav-right">
+      <button class="cart-btn" id="cart-toggle" aria-label="Cart" type="button">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path class="cart-icon-line" d="M2 2h2.5l1.8 9h10.4l1.5-6H7" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle class="cart-icon-line" cx="9.5" cy="18.5" r="1" stroke-width="1"/>
+          <circle class="cart-icon-line" cx="16.5" cy="18.5" r="1" stroke-width="1"/>
+        </svg>
+        <span class="cart-badge" id="cart-badge">{{ cart.item_count }}</span>
+      </button>
+      <button class="hamburger" id="hbg" aria-label="Menu" type="button">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
   </div>
   <div class="nav-drawer" id="drawer">
     <a class="drawer-item" href="{{ routes.collections_url }}">Shop</a>
@@ -31,6 +41,30 @@
 </nav>
 
 {{ content_for_layout }}
+
+<!-- CART OVERLAY + DRAWER -->
+<div class="cart-overlay" id="cart-overlay"></div>
+<aside id="cart-drawer" aria-label="Shopping cart">
+  <div class="cart-head">
+    <h3>Your Cart</h3>
+    <button class="cart-close" id="cart-close" type="button" aria-label="Close cart">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <line x1="2" y1="2" x2="16" y2="16" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+        <line x1="16" y1="2" x2="2" y2="16" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+  <div class="cart-items" id="cart-items">
+    <p class="cart-empty">Your cart is empty.</p>
+  </div>
+  <div class="cart-foot" id="cart-foot" style="display:none">
+    <div class="cart-total-row">
+      <span class="cart-total-label">Total</span>
+      <span class="cart-total-val" id="cart-total">{{ cart.total_price | money }}</span>
+    </div>
+    <a class="btn-checkout" href="/cart">Proceed to Checkout</a>
+  </div>
+</aside>
 
 <!-- FOOTER -->
 <footer>
